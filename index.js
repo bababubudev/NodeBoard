@@ -1,1 +1,1 @@
-console.log("Hello world");
+import * as mods from "./modules.js"

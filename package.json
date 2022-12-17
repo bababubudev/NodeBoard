@@ -1,0 +1,20 @@
+{
+  "name": "clipboard_sharing",
+  "version": "1.0.0",
+  "description": "Javascript version of my python project.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "clipboard",
+    "text_sharing",
+    "database"
+  ],
+  "author": "Prabesh Dai",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.3"
+  }
+}

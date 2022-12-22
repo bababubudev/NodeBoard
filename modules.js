@@ -6,8 +6,8 @@ import { fileURLToPath } from "url";
 Sutukka.config();
 
 const keys = {
-    naam: process.env.NAAM,
-    thegana: process.env.THEGANA
+    user: process.env.USER,
+    pass: process.env.PSSWD
 }
 
 const port_number = 3000;

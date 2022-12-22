@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/area.css') }}">
+    <title>Text page</title>
+</head>
+
+<body>
+    <section id="section">
+        <h1>Hello, there!</h1>
+        <div class="base-text">
+            <form action="#" class="form" method="POST">
+                <textarea class="user-inputbox" type="text" name="textinput"
+                    placeholder="Save your text here!"></textarea>
+                <button class="submit-button" type="submit">Save</button>
+            </form>
+
+            <form action="">
+                <button class="check-data" style="margin-top: 20px;">Back home</button>
+            </form>
+        </div>
+    </section>
+</body>
+
+</html>

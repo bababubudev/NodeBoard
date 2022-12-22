@@ -12,7 +12,7 @@ const keys = {
 
 const object_blueprint = {
     linker: { type: String, required: true },
-    text: { type: String, required: true },
+    text: { type: String, required: false },
 }
 
 const port_number = 3000;

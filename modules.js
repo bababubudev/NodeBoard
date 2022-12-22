@@ -15,9 +15,22 @@ const object_blueprint = {
     text: { type: String, required: false },
 }
 
+const object_session = {
+    secret: process.env.S_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true }
+}
+
 const port_number = 3000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export { keys, port_number, __dirname, object_blueprint };
+export function is_occupied(current_session)
+{
+    if (current_session.link) return true;
+    else return false;
+}
+
+export { keys, port_number, __dirname, object_blueprint, object_session };

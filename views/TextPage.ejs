@@ -6,7 +6,10 @@
 
 <body>
     <section id="section">
-        <h1>Hello, there!</h1>
+        <% if (user) { %>
+        <h1>Hello, <%= user %>!</h1>
+        <% } %>
+
         <div class="base-text">
             <form action="#" class="form" method="POST">
                 <textarea class="user-inputbox" type="text" name="textinput"
@@ -14,8 +17,8 @@
                 <button class="submit-button" type="submit">Save</button>
             </form>
 
-            <form action="#">
-                <button class="check-data" style="margin-top: 20px;">Back home</button>
+            <form action="/">
+                <button class="check-data" type="menu" style="margin-top: 20px;">Back home</button>
             </form>
         </div>
     </section>

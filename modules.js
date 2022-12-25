@@ -19,7 +19,7 @@ const object_session = {
     secret: process.env.S_SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: true }
+    cookie: { secure: false }
 }
 
 const port_number = 3000;

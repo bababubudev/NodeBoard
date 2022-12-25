@@ -34,7 +34,7 @@ function on_connect(result)
 
 function on_fail(err)
 {
-    console.log("Failed to connect to the database.");
+    console.log("Failed to connect to the database.\n" + err);
 }
 
 function on_request(req, res)
@@ -51,7 +51,7 @@ function on_request(req, res)
     }
 
     console.log("Session from on_request: " + req.session.link);
-    res.render(page, { title: page, user: req.session.link });
+    res.render(page, { title: page, info: req.session.link });
 }
 
 function foreign_redirect(req, res)
@@ -62,41 +62,32 @@ function foreign_redirect(req, res)
 function on_post(req, res)
 {
     let link = req.body.userlink;
+    let error = false;
 
     if (req.session.link && link != req.session.link)
-        logout();
+        logout(req);
 
-    req.session.link = link;
-    console.log("Link: " + req.session.link);
-
-    Redirect.findOne({ "linker": link })
+    Redirect.find({ linker: link })
         .then((result) =>
         {
-            console.log("[ Output ] \n" + result);
+            console.log("[ Output ]\n" + result);
+            req.session.link = link;
+
+            console.log("Link: " + req.session.link);
             res.redirect("/inbox");
         })
         .catch((err) =>
         {
-            const new_user = new Redirect({
-                linker: link,
-                text: ""
-            });
+            console.log("Error fetching user data.\n" + err);
+            error = true;
 
-            new_user.save()
-                .then((n_res) =>
-                {
-                    console.log("Newly created: " + n_res);
-                })
-                .catch((err) =>
-                {
-                    console.log(err);
-                });
+            res.status(404).render("Home", { title: "Back home", info: error });
         });
 }
 
 function logout(request)
 {
-    let link = req.session.link;
+    let link = request.session.link;
     request.session.destroy();
     console.log("Session value " + link + " destroyed!");
 }

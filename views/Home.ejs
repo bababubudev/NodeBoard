@@ -7,6 +7,12 @@
 <body>
     <section id="section">
         <h1>Redirect yourself!</h1>
+
+        <% if (info) { %>
+        <div class="base-text">Something went wrong with the input!</div>
+        <% } %>
+
+
         <div class="base-text">
             <form action="/inbox" method="POST" class="form">
                 <input class="user-inputbox" type="text" name="userlink" required="required"

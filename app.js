@@ -17,8 +17,8 @@ app.set("trust proxy", 1);
 
 app.use(express.static(mods.__dirname + "/static"));
 app.use(express.urlencoded({ extended: true }));
-app.use(morgan("dev"));
 app.use(session(mods.object_session));
+app.use(morgan("dev"));
 
 app.get("/", on_request);
 app.get("/inbox", on_request);
@@ -40,7 +40,6 @@ function on_fail(err)
 function on_request(req, res)
 {
     let page = "";
-    console.log(req.session.link);
     switch (req.url)
     {
         case "/":
@@ -51,12 +50,12 @@ function on_request(req, res)
             break;
     }
 
+    console.log("Session from on_request: " + req.session.link);
     res.render(page, { title: page, user: req.session.link });
 }
 
 function foreign_redirect(req, res)
 {
-    console.log("Request of type " + req.method + " was made outside of scope!");
     res.status(404).render("404", { title: "404 error" });
 }
 
@@ -64,14 +63,17 @@ function on_post(req, res)
 {
     let link = req.body.userlink;
 
-    if (mods.is_occupied(req.session) && link != req.session.link)
-        req.session.link = link;
+    if (req.session.link && link != req.session.link)
+        logout();
 
-    Redirect.findOne({ linker: link })
+    req.session.link = link;
+    console.log("Link: " + req.session.link);
+
+    Redirect.findOne({ "linker": link })
         .then((result) =>
         {
-            console.log(result);
-            res.redirect("/inbox")
+            console.log("[ Output ] \n" + result);
+            res.redirect("/inbox");
         })
         .catch((err) =>
         {
@@ -83,11 +85,18 @@ function on_post(req, res)
             new_user.save()
                 .then((n_res) =>
                 {
-                    console.log(n_res);
+                    console.log("Newly created: " + n_res);
                 })
                 .catch((err) =>
                 {
                     console.log(err);
                 });
         });
+}
+
+function logout(request)
+{
+    let link = req.session.link;
+    request.session.destroy();
+    console.log("Session value " + link + " destroyed!");
 }

@@ -40,6 +40,7 @@ function on_fail(err)
 function on_request(req, res)
 {
     let page = "";
+
     switch (req.url)
     {
         case "/":
@@ -50,8 +51,9 @@ function on_request(req, res)
             break;
     }
 
-    console.log("Session from on_request: " + req.session.link);
-    res.render(page, { title: page, info: req.session.link });
+    console.log("Session from on_request: " + stringed(req.session.data));
+    console.log("Database session name: " + req.session.data.linker);
+    res.render(page, { title: page, info: req.session.data.linker });
 }
 
 function foreign_redirect(req, res)
@@ -62,32 +64,39 @@ function foreign_redirect(req, res)
 function on_post(req, res)
 {
     let link = req.body.userlink;
-    let error = false;
+    let c_session = req.session.data;
 
-    if (req.session.link && link != req.session.link)
+    if (c_session && link != c_session.linker)
         logout(req);
 
-    Redirect.find({ linker: link })
+    Redirect.findOne({ linker: link })
         .then((result) =>
         {
-            console.log("[ Output ]\n" + result);
-            req.session.link = link;
+            if (result != null)
+            {
+                req.session.data = result;
+                console.log("[ Output ]\n" + result);
+            }
 
-            console.log("Link: " + req.session.link);
+            console.log("Link: " + c_session.linker);
             res.redirect("/inbox");
         })
         .catch((err) =>
         {
-            console.log("Error fetching user data.\n" + err);
-            error = true;
-
-            res.status(404).render("Home", { title: "Back home", info: error });
+            console.log(err);
         });
 }
 
 function logout(request)
 {
-    let link = request.session.link;
-    request.session.destroy();
+    let c_session = request.session.data;
+    let link = c_session.linker;
+
+    request.session = {};
     console.log("Session value " + link + " destroyed!");
+}
+
+function stringed(data)
+{
+    return JSON.stringify(data);
 }

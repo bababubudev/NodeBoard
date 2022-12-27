@@ -8,11 +8,6 @@
     <section id="section">
         <h1>Redirect yourself!</h1>
 
-        <% if (info) { %>
-        <div class="base-text">Something went wrong with the input!</div>
-        <% } %>
-
-
         <div class="base-text">
             <form action="/inbox" method="POST" class="form">
                 <input class="user-inputbox" type="text" name="userlink" required="required"
@@ -22,11 +17,11 @@
             </form>
         </div>
 
-        <!-- <div class="button-container">
+        <div class="button-container">
             <form action="{{ url_for('inbox') }}">
                 <button class="check-data">Previous Redirect</button>
             </form>
-        </div> -->
+        </div>
     </section>
 </body>
 

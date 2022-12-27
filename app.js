@@ -51,9 +51,16 @@ function on_request(req, res)
             break;
     }
 
-    console.log("Session from on_request: " + stringed(req.session.data));
-    console.log("Database session name: " + req.session.data.linker);
-    res.render(page, { title: page, info: req.session.data.linker });
+    if (req.session.data)
+    {
+        console.log("Session data: " + stringed(req.session.data));
+        console.log("Database session name: " + req.session.data["linker"]);
+        res.render(page, { title: page, info: req.session.data });
+    }
+    else
+    {
+        res.render(page, { title: page, info: null });
+    }
 }
 
 function foreign_redirect(req, res)
@@ -64,9 +71,8 @@ function foreign_redirect(req, res)
 function on_post(req, res)
 {
     let link = req.body.userlink;
-    let c_session = req.session.data;
 
-    if (c_session && link != c_session.linker)
+    if (req.session.data && link != req.session.data["linker"])
         logout(req);
 
     Redirect.findOne({ linker: link })
@@ -78,7 +84,7 @@ function on_post(req, res)
                 console.log("[ Output ]\n" + result);
             }
 
-            console.log("Link: " + c_session.linker);
+            console.log("Link: " + req.session.data["linker"]);
             res.redirect("/inbox");
         })
         .catch((err) =>
@@ -90,7 +96,7 @@ function on_post(req, res)
 function logout(request)
 {
     let c_session = request.session.data;
-    let link = c_session.linker;
+    let link = c_session["linker"];
 
     request.session = {};
     console.log("Session value " + link + " destroyed!");

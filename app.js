@@ -62,32 +62,34 @@ function foreign_redirect(req, res)
 function on_post(req, res)
 {
     let link = req.body.userlink;
-    let error = false;
 
     if (req.session.link && link != req.session.link)
         logout(req);
 
-    Redirect.find({ linker: link })
+    Redirect.findOne({ linker: link })
         .then((result) =>
         {
-            console.log("[ Output ]\n" + result);
-            req.session.link = link;
+            if (result != null)
+            {
+                req.session.link = link;
+                req.session.mal = result;
+                console.log("[ Output ]\n" + result);
+            }
 
             console.log("Link: " + req.session.link);
+            console.log("User: " + req.session.mal.linker);
+
             res.redirect("/inbox");
         })
         .catch((err) =>
         {
-            console.log("Error fetching user data.\n" + err);
-            error = true;
-
-            res.status(404).render("Home", { title: "Back home", info: error });
+            console.log(err);
         });
 }
 
 function logout(request)
 {
     let link = request.session.link;
-    request.session.destroy();
+    request.session.link = "User";
     console.log("Session value " + link + " destroyed!");
 }

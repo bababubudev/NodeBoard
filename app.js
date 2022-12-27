@@ -40,6 +40,7 @@ function on_fail(err)
 function on_request(req, res)
 {
     let page = "";
+
     switch (req.url)
     {
         case "/":
@@ -50,8 +51,16 @@ function on_request(req, res)
             break;
     }
 
-    console.log("Session from on_request: " + req.session.link);
-    res.render(page, { title: page, info: req.session.link });
+    if (req.session.data)
+    {
+        console.log("Session data: " + stringed(req.session.data));
+        console.log("Database session name: " + req.session.data["linker"]);
+        res.render(page, { title: page, info: req.session.data });
+    }
+    else
+    {
+        res.render(page, { title: page, info: null });
+    }
 }
 
 function foreign_redirect(req, res)
@@ -63,7 +72,7 @@ function on_post(req, res)
 {
     let link = req.body.userlink;
 
-    if (req.session.link && link != req.session.link)
+    if (req.session.data && link != req.session.data["linker"])
         logout(req);
 
     Redirect.findOne({ linker: link })
@@ -71,14 +80,11 @@ function on_post(req, res)
         {
             if (result != null)
             {
-                req.session.link = link;
-                req.session.mal = result;
+                req.session.data = result;
                 console.log("[ Output ]\n" + result);
             }
 
-            console.log("Link: " + req.session.link);
-            console.log("User: " + req.session.mal.linker);
-
+            console.log("Link: " + req.session.data["linker"]);
             res.redirect("/inbox");
         })
         .catch((err) =>
@@ -89,7 +95,14 @@ function on_post(req, res)
 
 function logout(request)
 {
-    let link = request.session.link;
-    request.session.link = "User";
+    let c_session = request.session.data;
+    let link = c_session["linker"];
+
+    request.session = {};
     console.log("Session value " + link + " destroyed!");
+}
+
+function stringed(data)
+{
+    return JSON.stringify(data);
 }

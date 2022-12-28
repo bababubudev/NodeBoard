@@ -38,11 +38,12 @@ h1 {
     min-height: 35px;
     justify-content: space-between;
     gap: 20px;
-    padding-bottom: 20px;
+
+    text-align: center;
 }
 
 .submit-button {
-    width: 25%;
+    width: 25vw;
 
     color: rgb(255, 187, 0);
     background-color: transparent;
@@ -66,7 +67,7 @@ h1 {
 }
 
 .user-inputbox {
-    width: 100%;
+    width: 100vw;
     padding-left: 10px;
     border: transparent;
     border-radius: 3px;
@@ -79,9 +80,10 @@ h1 {
     border-style: solid;
     border-radius: 2px;
 
-    width: 100%;
-    padding-top: 7px;
-    padding-bottom: 7px;
+    font-size: 14px;
+    text-decoration: none;
+    width: 100vw;
+    padding: 5px;
     transition: 0.3s;
 }
 

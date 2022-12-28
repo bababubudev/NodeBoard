@@ -9,7 +9,7 @@
         <h1>Redirect yourself!</h1>
 
         <div class="base-text">
-            <form action="/inbox" method="POST" class="form">
+            <form action="#" method="POST" class="form">
                 <input class="user-inputbox" type="text" name="userlink" required="required"
                     placeholder="Create your field or continue from before...">
 
@@ -17,11 +17,11 @@
             </form>
         </div>
 
-        <div class="button-container">
-            <form action="{{ url_for('inbox') }}">
-                <button class="check-data">Previous Redirect</button>
-            </form>
-        </div>
+        <% if (info["_id"] !== 0) { %>
+        <nav class="form">
+            <a class="check-data" href="/inbox" style="margin-top: 20px;">Previous Redirect</a>
+        </nav>
+        <% } %>
     </section>
 </body>
 

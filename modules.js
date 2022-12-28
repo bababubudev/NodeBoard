@@ -22,7 +22,7 @@ const object_session = {
 }
 
 const object_default = {
-    _id: null,
+    _id: 0,
     linker: "User",
     text: "",
     createdAt: null,

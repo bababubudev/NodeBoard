@@ -23,7 +23,8 @@ app.use(morgan("dev"));
 app.get("/", on_request);
 app.get("/inbox", on_request);
 
-app.post("/inbox", on_post);
+app.post("/", on_post);
+app.post("/inbox", on_inbox_post);
 app.use(foreign_redirect);
 
 function on_connect(result)
@@ -49,11 +50,13 @@ function on_request(req, res)
         case "/inbox":
             page += "TextPage";
             break;
+        default:
+            page += "404";
+            break;
     }
 
     if (req.session.data)
     {
-        mods.log("Session data: " + mods.stringed(req.session.data));
         mods.log("Database session name: " + req.session.data["linker"]);
         res.render(page, { title: page, info: req.session.data });
     }
@@ -97,15 +100,50 @@ function on_post(req, res)
                     })
                     .catch((err) =>
                     {
-                        mods.log(err);
+                        mods.log("Error: \n" + err);
                         res.redirect("/");
                     });
             }
         })
         .catch((err) =>
         {
-            mods.log(err);
+            mods.log("Error: \n" + err);
             res.redirect("/");
+        });
+
+}
+
+function on_inbox_post(req, res)
+{
+    let text = req.body.textinput;
+
+    if (!req.session.data)
+    {
+        res.redirect("/");
+        return;
+    }
+
+    Redirect.findOne({ linker: req.session.data["linker"] })
+        .then((result) =>   
+        {
+            result["text"] = text;
+            result.save()
+                .then((s_result) =>
+                {
+                    mods.log("[ New Text ]\n" + s_result);
+                    req.session.data = s_result;
+                    res.redirect("/inbox");
+                })
+                .catch((err) =>
+                {
+                    mods.log("Error: \n" + err);
+                    res.redirect("/");
+                });
+
+        })
+        .catch((err) =>
+        {
+            mods.log("Error \n" + err);
         });
 
 }

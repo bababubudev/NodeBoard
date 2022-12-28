@@ -1,4 +1,4 @@
-import express from "express"
+import express, { response } from "express"
 import morgan from "morgan"
 import mongoose from "mongoose"
 import session from "express-session"
@@ -29,18 +29,19 @@ app.use(foreign_redirect);
 
 function on_connect(result)
 {
-    mods.log("Connected to the database.");
+    console.log("Connected to the database.");
     app.listen(mods.port_number);
 }
 
 function on_fail(err)
 {
-    mods.log("Failed to connect to the database.\n" + err);
+    console.log("Failed to connect to the database.\n" + err);
 }
 
 function on_get(req, res)
 {
     let page = "";
+
     switch (req.url)
     {
         case "/":
@@ -56,24 +57,41 @@ function on_get(req, res)
 
     if (req.session.data)
     {
-        let is_synced = false;
-        Redirect.findOne({ linker: req.session.data["linker"] })
-            .then((r) =>
+        sync_session(req)
+            .then(() =>
             {
-                mods.log("Database: " + r.createdAt + "\nSession: " + req.session.data["createdAt"]);
-                is_synced = r.updatedAt === req.session.data["updatedAt"];
+                console.log("Database session name: " + req.session.data["linker"]);
+                console.log("Database session text: " + req.session.data["text"]);
+                res.render(page, { title: page, info: req.session.data });
             });
-
-        mods.log("Database session name: " + req.session.data["linker"]);
-        mods.log("Database session text: " + req.session.data["text"]);
-        mods.log("Is synced: " + is_synced);
-        res.render(page, { title: page, info: req.session.data });
     }
     else
     {
-        mods.log("No sessions found!");
+        console.log("No sessions found!");
         res.render(page, { title: page, info: mods.object_default });
     }
+}
+
+async function sync_session(request)
+{
+    let is_synced = false;
+    return Redirect.findOne({ linker: request.session.data["linker"] })
+        .then((r) =>
+        {
+            is_synced = request.session.data["text"] === r.text;
+
+            if (is_synced) return;
+            else
+            {
+                console.log("Out of sync! Syncing...");
+                request.session.data = r;
+            }
+        })
+        .catch((err) =>
+        {
+            console.log("Something ain't right!\n" + err);
+        });
+
 }
 
 function foreign_redirect(req, res)
@@ -103,20 +121,20 @@ function on_post(req, res)
                 new_user.save()
                     .then((s_result) =>
                     {
-                        mods.log("[ New Output ]\n" + s_result);
+                        console.log("[ New Output ]\n" + s_result);
                         req.session.data = s_result;
                         res.redirect("/inbox");
                     })
                     .catch((err) =>
                     {
-                        mods.log("Error: \n" + err);
+                        console.log("Error: \n" + err);
                         res.redirect("/");
                     });
             }
         })
         .catch((err) =>
         {
-            mods.log("Error: \n" + err);
+            console.log("Error: \n" + err);
             res.redirect("/");
         });
 
@@ -132,6 +150,7 @@ function on_inbox_post(req, res)
         return;
     }
 
+
     Redirect.findOne({ linker: req.session.data["linker"] })
         .then((result) =>   
         {
@@ -146,21 +165,21 @@ function on_inbox_post(req, res)
             result.save()
                 .then((s_result) =>
                 {
-                    mods.log("[ New Text ]\n" + s_result);
+                    console.log("[ New Text ]\n" + s_result);
                     req.session.data = s_result;
 
                     res.redirect("/inbox");
                 })
                 .catch((err) =>
                 {
-                    mods.log("Error: \n" + err);
+                    console.log("Error: \n" + err);
                     res.redirect("/");
                 });
 
         })
         .catch((err) =>
         {
-            mods.log("Error \n" + err);
+            console.log("Error \n" + err);
         });
 
 }
@@ -170,5 +189,5 @@ function logout(request)
     let link = request.session.data["linker"];
 
     request.session.data = mods.object_default;
-    mods.log("Session value " + link + " destroyed!");
+    console.log("Session value " + link + " destroyed!");
 }

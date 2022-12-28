@@ -28,13 +28,13 @@ app.use(foreign_redirect);
 
 function on_connect(result)
 {
-    console.log("Connected to the database.");
+    mods.log("Connected to the database.");
     app.listen(mods.port_number);
 }
 
 function on_fail(err)
 {
-    console.log("Failed to connect to the database.\n" + err);
+    mods.log("Failed to connect to the database.\n" + err);
 }
 
 function on_request(req, res)
@@ -53,13 +53,14 @@ function on_request(req, res)
 
     if (req.session.data)
     {
-        console.log("Session data: " + stringed(req.session.data));
-        console.log("Database session name: " + req.session.data["linker"]);
+        mods.log("Session data: " + mods.stringed(req.session.data));
+        mods.log("Database session name: " + req.session.data["linker"]);
         res.render(page, { title: page, info: req.session.data });
     }
     else
     {
-        res.render(page, { title: page, info: null });
+        mods.log("No sessions found!");
+        res.render(page, { title: page, info: mods.object_default });
     }
 }
 
@@ -82,27 +83,37 @@ function on_post(req, res)
             {
                 req.session.data = result;
                 console.log("[ Output ]\n" + result);
+                res.redirect("/inbox");
             }
-
-            console.log("Link: " + req.session.data["linker"]);
-            res.redirect("/inbox");
+            else
+            {
+                const new_user = new Redirect({ linker: link, text: "" });
+                new_user.save()
+                    .then((s_result) =>
+                    {
+                        mods.log("[ New Output ]\n" + s_result);
+                        req.session.data = s_result;
+                        res.redirect("/inbox");
+                    })
+                    .catch((err) =>
+                    {
+                        mods.log(err);
+                        res.redirect("/");
+                    });
+            }
         })
         .catch((err) =>
         {
-            console.log(err);
+            mods.log(err);
+            res.redirect("/");
         });
+
 }
 
 function logout(request)
 {
-    let c_session = request.session.data;
-    let link = c_session["linker"];
+    let link = request.session.data["linker"];
 
-    request.session = {};
-    console.log("Session value " + link + " destroyed!");
-}
-
-function stringed(data)
-{
-    return JSON.stringify(data);
+    request.session.data = mods.object_default;
+    mods.log("Session value " + link + " destroyed!");
 }

@@ -20,8 +20,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(session(mods.object_session));
 app.use(morgan("dev"));
 
-app.get("/", on_request);
-app.get("/inbox", on_request);
+app.get("/", on_get);
+app.get("/inbox", on_get);
 
 app.post("/", on_post);
 app.post("/inbox", on_inbox_post);
@@ -38,10 +38,9 @@ function on_fail(err)
     mods.log("Failed to connect to the database.\n" + err);
 }
 
-function on_request(req, res)
+function on_get(req, res)
 {
     let page = "";
-
     switch (req.url)
     {
         case "/":
@@ -57,7 +56,17 @@ function on_request(req, res)
 
     if (req.session.data)
     {
+        let is_synced = false;
+        Redirect.findOne({ linker: req.session.data["linker"] })
+            .then((r) =>
+            {
+                mods.log("Database: " + r.createdAt + "\nSession: " + req.session.data["createdAt"]);
+                is_synced = r.updatedAt === req.session.data["updatedAt"];
+            });
+
         mods.log("Database session name: " + req.session.data["linker"]);
+        mods.log("Database session text: " + req.session.data["text"]);
+        mods.log("Is synced: " + is_synced);
         res.render(page, { title: page, info: req.session.data });
     }
     else
@@ -126,12 +135,20 @@ function on_inbox_post(req, res)
     Redirect.findOne({ linker: req.session.data["linker"] })
         .then((result) =>   
         {
+            if (result["text"] === text)
+            {
+                res.redirect("/inbox");
+                return;
+            }
+
             result["text"] = text;
+
             result.save()
                 .then((s_result) =>
                 {
                     mods.log("[ New Text ]\n" + s_result);
                     req.session.data = s_result;
+
                     res.redirect("/inbox");
                 })
                 .catch((err) =>

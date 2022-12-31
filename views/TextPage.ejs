@@ -7,19 +7,38 @@
 <body>
     <section id="section">
         <h1>Hello, <%= info["linker"] %>!</h1>
+        <form action="/inbox" class="form" method="POST">
+            <textarea class="user-inputbox" type="text" name="textinput"
+                placeholder="Save your text here!"><%= info["text"] %></textarea>
 
-        <div class="base-text">
-            <form action="/inbox" class="form" method="POST">
-                <textarea class="user-inputbox" type="text" name="textinput"
-                    placeholder="Save your text here!"><%= info["text"] %></textarea>
+            <div class="dabaune">
+                <select name="removal" id="timer" class="dropdown">
+                    <option value="h-five">5 Hour</option>
+                    <option value="d-one">1 Day</option>
+                    <option value="d-ten">10 Day</option>
+                    <option value="m-one">1 Month</option>
+                </select>
                 <button class="submit-button" type="submit">Save</button>
-            </form>
+            </div>
 
-            <nav class="form">
-                <a class="check-data" href="/" style="margin-top: 20px;">Back Home</a>
-            </nav>
-        </div>
+            <a href="/HTML/base.html" class="anchor">Back home</a>
+        </form>
     </section>
+
+    <script>
+        const tx = document.getElementsByTagName("textarea");
+        for (let i = 0; i < tx.length; i++)
+        {
+            tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+            tx[i].addEventListener("input", OnInput, false);
+        }
+
+        function OnInput()
+        {
+            this.style.height = 0;
+            this.style.height = (this.scrollHeight) + "px";
+        }
+    </script>
 </body>
 
 </html>

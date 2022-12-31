@@ -7,7 +7,7 @@ import { Redirect } from "./models/redirects.js"
 import * as mods from "./modules.js"
 
 const app = express();
-const dbURI = `mongodb+srv://dai:${mods.keys.pass}@daiko.wo85kxg.mongodb.net/nodeboard_db?retryWrites=true&w=majority`;
+const dbURI = `mongodb+srv://${mods.keys.user}:${mods.keys.pass}@${mods.keys.user}.wo85kxg.mongodb.net/nodeboard_db?retryWrites=true&w=majority`;
 
 mongoose.set("strictQuery", false);
 mongoose.connect(dbURI).then(on_connect).catch(on_fail);
@@ -91,7 +91,6 @@ async function sync_session(request)
         {
             console.log("Something ain't right!\n" + err);
         });
-
 }
 
 function foreign_redirect(req, res)
@@ -104,7 +103,7 @@ function on_post(req, res)
     let link = req.body.userlink;
 
     if (req.session.data && link != req.session.data["linker"])
-        logout(req);
+        reset(req);
 
     Redirect.findOne({ linker: link })
         .then((result) =>
@@ -184,7 +183,12 @@ function on_inbox_post(req, res)
 
 }
 
-function logout(request)
+function remove_data()
+{
+
+}
+
+function reset(request)
 {
     let link = request.session.data["linker"];
 

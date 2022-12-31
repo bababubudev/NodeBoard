@@ -61,7 +61,6 @@ function on_get(req, res)
             .then(() =>
             {
                 console.log("Database session name: " + req.session.data["linker"]);
-                console.log("Database session text: " + req.session.data["text"]);
                 res.render(page, { title: page, info: req.session.data });
             });
     }
@@ -111,7 +110,6 @@ function on_post(req, res)
             if (result != null)
             {
                 req.session.data = result;
-                console.log("[ Output ]\n" + result);
                 res.redirect("/inbox");
             }
             else
@@ -142,6 +140,7 @@ function on_post(req, res)
 function on_inbox_post(req, res)
 {
     let text = req.body.textinput;
+    let time = req.body.removal;
 
     if (!req.session.data)
     {

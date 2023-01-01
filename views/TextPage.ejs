@@ -13,10 +13,10 @@
 
             <div class="dabaune">
                 <select name="removal" id="timer" class="dropdown">
-                    <option value="h-five">5 Hour</option>
-                    <option value="d-one">1 Day</option>
-                    <option value="d-ten">10 Day</option>
-                    <option value="m-one">1 Month</option>
+                    <option value="h-five" <%= (timerID == "h-five") ? "selected":"" %>>5 Hour</option>
+                    <option value="d-one" <%= (timerID == "d-one") ? "selected":"" %>>1 Day</option>
+                    <option value="d-ten" <%= (timerID == "d-ten") ? "selected":"" %>>10 Day</option>
+                    <option value="m-one" <%= (timerID == "m-one") ? "selected":"" %>>1 Month</option>
                 </select>
                 <button class="submit-button" type="submit">Save</button>
             </div>

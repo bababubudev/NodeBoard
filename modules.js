@@ -4,6 +4,11 @@ import * as Sutukka from "dotenv"
 
 Sutukka.config();
 
+const seconds = 1000;
+const minutes = seconds * 60;
+const hours = minutes * 60;
+const days = hours * 24;
+
 const keys = {
     user: process.env.USER,
     pass: process.env.PSSWD
@@ -20,7 +25,7 @@ const object_session = {
     saveUninitialized: true,
     cookie: {
         secure: false,
-        maxAge: 1000 * 30
+        maxAge: 1000 * 60 * 5
     }
 }
 
@@ -40,6 +45,24 @@ const __dirname = path.dirname(__filename);
 export function stringed(_data)
 {
     return JSON.stringify(_data);
+}
+
+export function parse_time(timer)
+{
+    switch (timer)
+    {
+        case "h-five":
+            return 5 * hours;
+        case "d-one":
+            return days;
+        case "d-ten":
+            return 10 * days;
+        case "m-one":
+            return 30 * days;
+        default:
+            console.log("Default");
+            return minutes;
+    }
 }
 
 export

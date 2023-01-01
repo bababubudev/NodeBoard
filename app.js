@@ -9,6 +9,11 @@ import * as mods from "./modules.js"
 const app = express();
 const dbURI = `mongodb+srv://${mods.keys.user}:${mods.keys.pass}@${mods.keys.user}.wo85kxg.mongodb.net/nodeboard_db?retryWrites=true&w=majority`;
 
+const timers = []
+
+let prev_t;
+let time_id = "";
+
 mongoose.set("strictQuery", false);
 mongoose.connect(dbURI).then(on_connect).catch(on_fail);
 
@@ -55,19 +60,21 @@ function on_get(req, res)
             break;
     }
 
+
     if (req.session.data)
     {
         sync_session(req)
             .then(() =>
             {
+
                 console.log("Database session name: " + req.session.data["linker"]);
-                res.render(page, { title: page, info: req.session.data });
+                res.render(page, { title: page, info: req.session.data, timerID: time_id });
             });
     }
     else
     {
         console.log("No sessions found!");
-        res.render(page, { title: page, info: mods.object_default });
+        res.render(page, { title: page, info: mods.object_default, timerID: "" });
     }
 }
 
@@ -140,7 +147,7 @@ function on_post(req, res)
 function on_inbox_post(req, res)
 {
     let text = req.body.textinput;
-    let time = req.body.removal;
+    let time_to_remove = req.body.removal;
 
     if (!req.session.data)
     {
@@ -148,23 +155,33 @@ function on_inbox_post(req, res)
         return;
     }
 
+    let link = req.session.data["linker"];
 
-    Redirect.findOne({ linker: req.session.data["linker"] })
+    Redirect.findOne({ linker: link })
         .then((result) =>   
         {
-            if (result["text"] === text)
+            if (result["text"] === text && (prev_t === timers[link] && prev_t !== undefined))
             {
+                console.log("Skipped: " + prev_t + timers[link]);
                 res.redirect("/inbox");
                 return;
             }
 
             result["text"] = text;
+            time_id = time_to_remove;
 
             result.save()
                 .then((s_result) =>
                 {
-                    console.log("[ New Text ]\n" + s_result);
+                    let duration = mods.parse_time(time_to_remove);
+
                     req.session.data = s_result;
+                    req.session.cookie.maxAge = duration + (1000 * 60);
+
+                    clearTimeout(timers[link]);
+                    console.log("[ New Text ]\n" + s_result);
+                    timers[link] = setTimeout(remove_data.bind(null, req), duration);
+                    prev_t = timers[link];
 
                     res.redirect("/inbox");
                 })
@@ -182,9 +199,25 @@ function on_inbox_post(req, res)
 
 }
 
-function remove_data()
+function remove_data(req)
 {
+    if (req.session.data["_id"] == 0)
+    {
+        console.log("No data to delete.");
+        return;
+    }
 
+    Redirect.findByIdAndRemove(req.session.data["_id"], (err) =>
+    {
+        if (err)
+        {
+            console.log(err);
+        }
+        else
+        {
+            console.log("Deleting data of " + req.session.data["linker"]);
+        }
+    });
 }
 
 function reset(request)

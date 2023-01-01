@@ -28,23 +28,40 @@ h1 {
     color: rgb(255, 145, 0);
 }
 
-.base-text>* {
+:not(h1):not(.user-inputbox) {
     font-size: 15px;
     color: rgb(255, 187, 0);
 }
 
-.form {
-    display: flex;
-    min-height: 35px;
-    justify-content: space-between;
-    gap: 20px;
+@media (max-width: 700px) {
+    .content {
+        display: grid;
+        grid-template-rows: 1fr 30px;
+        gap: 40px;
+    }
 
-    text-align: center;
+    .form {
+        display: grid;
+        grid-template-rows: 50px 50px;
+        gap: 10px;
+    }
+}
+
+@media (min-width: 700px) {
+    .content {
+        display: grid;
+        grid-template-rows: 40px 1fr;
+        gap: 10px
+    }
+
+    .form {
+        display: grid;
+        grid-template-columns: 1fr 200px;
+        gap: 10px;
+    }
 }
 
 .submit-button {
-    width: 25vw;
-
     color: rgb(255, 187, 0);
     background-color: transparent;
     border: 1px;
@@ -67,13 +84,15 @@ h1 {
 }
 
 .user-inputbox {
-    width: 100vw;
-    padding-left: 10px;
     border: transparent;
     border-radius: 3px;
 }
 
-.check-data {
+.anchor {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     color: rgb(255, 187, 0);
     background-color: transparent;
     border: 1px;
@@ -82,19 +101,18 @@ h1 {
 
     font-size: 14px;
     text-decoration: none;
-    width: 100vw;
     padding: 5px;
     transition: 0.3s;
 }
 
-.check-data:hover {
+.anchor:hover {
     color: rgb(0, 0, 0);
     background-color: rgb(255, 187, 0);
     border-color: rgb(255, 187, 0);
     transition: 0.3s;
 }
 
-.check-data:active {
+.anchor:active {
     opacity: 70%;
     border-color: rgb(255, 187, 0);
     transition: 0.3s;

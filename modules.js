@@ -31,7 +31,7 @@ const object_session = {
 
 const object_default = {
     _id: 0,
-    linker: "User",
+    linker: "this is not the right place",
     text: "",
     createdAt: null,
     updatedAt: null
@@ -51,14 +51,16 @@ export function parse_time(timer)
 {
     switch (timer)
     {
+        case "no-opt":
+            return null;
         case "h-five":
-            return 5 * hours;
+            return 5 * seconds;
         case "d-one":
             return days;
+        case "d-five":
+            return 5 * days;
         case "d-ten":
             return 10 * days;
-        case "m-one":
-            return 30 * days;
         default:
             console.log("Default");
             return minutes;

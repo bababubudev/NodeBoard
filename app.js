@@ -11,8 +11,8 @@ const dbURI = `mongodb+srv://${mods.keys.user}:${mods.keys.pass}@${mods.keys.use
 
 const timers = []
 
-let prev_t;
 let time_id = "";
+let prev_t;
 
 mongoose.set("strictQuery", false);
 mongoose.connect(dbURI).then(on_connect).catch(on_fail);
@@ -66,7 +66,6 @@ function on_get(req, res)
         sync_session(req)
             .then(() =>
             {
-
                 console.log("Database session name: " + req.session.data["linker"]);
                 res.render(page, { title: page, info: req.session.data, timerID: time_id });
             });
@@ -160,15 +159,22 @@ function on_inbox_post(req, res)
     Redirect.findOne({ linker: link })
         .then((result) =>   
         {
-            if (result["text"] === text && (prev_t === timers[link] && prev_t !== undefined))
+            if (!result)
             {
-                console.log("Skipped: " + prev_t + timers[link]);
+                res.redirect("/");
+                reset(req);
+                return;
+            }
+
+            if (result["text"] === text && (prev_t === time_to_remove && prev_t !== undefined)) 
+            {
+                console.log(prev_t + " " + time_to_remove);
                 res.redirect("/inbox");
                 return;
             }
 
             result["text"] = text;
-            time_id = time_to_remove;
+            time_id = req.session.data["linker"] === link ? time_to_remove : "no-opt";
 
             result.save()
                 .then((s_result) =>
@@ -176,12 +182,15 @@ function on_inbox_post(req, res)
                     let duration = mods.parse_time(time_to_remove);
 
                     req.session.data = s_result;
-                    req.session.cookie.maxAge = duration + (1000 * 60);
-
-                    clearTimeout(timers[link]);
                     console.log("[ New Text ]\n" + s_result);
-                    timers[link] = setTimeout(remove_data.bind(null, req), duration);
-                    prev_t = timers[link];
+
+                    if (duration !== null)
+                    {
+                        req.session.cookie.maxAge = duration;
+                        clearTimeout(timers[link]);
+                        timers[link] = setTimeout(remove_data.bind(null, req), duration);
+                        prev_t = time_to_remove;
+                    }
 
                     res.redirect("/inbox");
                 })

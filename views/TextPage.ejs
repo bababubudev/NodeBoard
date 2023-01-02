@@ -8,18 +8,23 @@
     <section id="section">
         <h1>Hello, <%= info["linker"] %>!</h1>
         <form action="/inbox" class="form" method="POST">
+            <% if (info["_id"] === 0) { %>
+            <p style="margin-bottom: 30px;"> PAGE WAS ACCESSED WITHOUT LOGGING IN! >:( </p>
+            <% } else { %>
             <textarea class="user-inputbox" type="text" name="textinput"
                 placeholder="Save your text here!"><%= info["text"] %></textarea>
 
             <div class="dabaune">
                 <select name="removal" id="timer" class="dropdown">
-                    <option value="h-five" <%= (timerID == "h-five") ? "selected":"" %>>5 Hour</option>
+                    <option value="no-opt" <%= (timerID == "no-opt") ? "selected":"" %>>Don't Remove</option>
+                    <option value="h-five" <%= (timerID == "h-five") ? "selected":"" %>>5 Hours</option>
                     <option value="d-one" <%= (timerID == "d-one") ? "selected":"" %>>1 Day</option>
-                    <option value="d-ten" <%= (timerID == "d-ten") ? "selected":"" %>>10 Day</option>
-                    <option value="m-one" <%= (timerID == "m-one") ? "selected":"" %>>1 Month</option>
+                    <option value="d-five" <%= (timerID == "d-five") ? "selected":"" %>>5 Days</option>
+                    <option value="d-ten" <%= (timerID == "d-ten") ? "selected":"" %>>10 Days</option>
                 </select>
                 <button class="submit-button" type="submit">Save</button>
             </div>
+            <% } %>
 
             <a href="/" class="anchor">Back home</a>
         </form>

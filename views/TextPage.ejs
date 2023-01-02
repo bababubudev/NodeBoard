@@ -6,12 +6,19 @@
 
 <body>
     <section id="section">
-        <h1>Hello, <%= info["linker"] %>!</h1>
+        <div class="info">
+            <h1 class="intro">Hello, <%= info["linker"] %>!</h1>
+            <% if (messages.success) { %>
+            <div class="alert alert-success base-text"><%= messages.success %></div>
+            <% } %>
+        </div>
+
         <form action="/inbox" class="form" method="POST">
             <% if (info["_id"] === 0) { %>
-            <p style="margin-bottom: 30px;"> PAGE WAS ACCESSED WITHOUT LOGGING IN! >:( </p>
+            <p style="margin-bottom: 30px;"> PAGE WAS ACCESSED WITHOUT LOGGING IN </p>
             <% } else { %>
-            <textarea class="user-inputbox" type="text" name="textinput"
+
+            <textarea class="user-inputbox base-text" type="text" name="textinput"
                 placeholder="Save your text here!"><%= info["text"] %></textarea>
 
             <div class="dabaune">
@@ -26,12 +33,28 @@
             </div>
             <% } %>
 
-            <a href="/" class="anchor">Back home</a>
+            <div class="laijani">
+                <% if (link) { %>
+                <a href="<%- info["text"] %>" target="_blank" class="anchor link">Take me to link</a>
+                <% } %>
+
+                <a href="/" class="anchor">Back home</a>
+            </div>
         </form>
     </section>
 
     <script>
         const tx = document.getElementsByTagName("textarea");
+        const anchor_area = document.querySelector('.laijani');
+        const link = "<%= link %>";
+
+        anchor_area.style.setProperty("grid-template-columns", "1fr 1fr");
+        if (link === "false")
+        {
+            console.log("Chalyo");
+            anchor_area.style.setProperty("grid-template-columns", "none");
+        }
+
         for (let i = 0; i < tx.length; i++)
         {
             tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");

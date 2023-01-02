@@ -2,6 +2,7 @@ import express from "express"
 import morgan from "morgan"
 import mongoose from "mongoose"
 import session from "express-session"
+import flash from "connect-flash"
 
 import { Redirect } from "./models/redirects.js"
 import * as mods from "./modules.js"
@@ -24,6 +25,7 @@ app.use(express.static(mods.__dirname + "/static"));
 app.use(express.urlencoded({ extended: true }));
 app.use(session(mods.object_session));
 app.use(morgan("dev"));
+app.use(flash());
 
 app.get("/", on_get);
 app.get("/inbox", on_get);
@@ -35,7 +37,7 @@ app.use(foreign_redirect);
 function on_connect(result)
 {
     console.log("Connected to the database.");
-    app.listen(mods.port_number);
+    app.listen(mods.port_number)
 }
 
 function on_fail(err)
@@ -67,13 +69,26 @@ function on_get(req, res)
             .then(() =>
             {
                 console.log("Database session name: " + req.session.data["linker"]);
-                res.render(page, { title: page, info: req.session.data, timerID: time_id });
+                console.log("Is a link: " + mods.is_link(req.session.data["text"]));
+                res.render(page, {
+                    title: page,
+                    info: req.session.data,
+                    timerID: time_id,
+                    messages: req.flash(),
+                    link: mods.is_link(req.session.data["text"])
+                });
             });
     }
     else
     {
         console.log("No sessions found!");
-        res.render(page, { title: page, info: mods.object_default, timerID: "" });
+        res.render(page, {
+            title: page,
+            info: mods.object_default,
+            timerID: "",
+            messages: req.flash(),
+            link: false
+        });
     }
 }
 
@@ -182,16 +197,16 @@ function on_inbox_post(req, res)
                     let duration = mods.parse_time(time_to_remove);
 
                     req.session.data = s_result;
+                    req.session.cookie.maxAge = duration;
                     console.log("[ New Text ]\n" + s_result);
 
+                    clearTimeout(timers[link]);
                     if (duration !== null)
-                    {
-                        req.session.cookie.maxAge = duration;
-                        clearTimeout(timers[link]);
                         timers[link] = setTimeout(remove_data.bind(null, req), duration);
-                        prev_t = time_to_remove;
-                    }
 
+                    prev_t = time_to_remove;
+
+                    req.flash("success", `Your text is now saved for ${mods.parse_timeID(time_id)}!`);
                     res.redirect("/inbox");
                 })
                 .catch((err) =>
@@ -234,5 +249,8 @@ function reset(request)
     let link = request.session.data["linker"];
 
     request.session.data = mods.object_default;
+    if (timers[link]) delete timers[link];
+
     console.log("Session value " + link + " destroyed!");
+    request.flash("success", `Session for ${link} replaced!`)
 }

@@ -31,7 +31,7 @@ const object_session = {
 
 const object_default = {
     _id: 0,
-    linker: "this is not the right place",
+    linker: "it's the wrong page",
     text: "",
     createdAt: null,
     updatedAt: null
@@ -54,7 +54,7 @@ export function parse_time(timer)
         case "no-opt":
             return null;
         case "h-five":
-            return 5 * seconds;
+            return 5 * hours;
         case "d-one":
             return days;
         case "d-five":
@@ -65,6 +65,32 @@ export function parse_time(timer)
             console.log("Default");
             return minutes;
     }
+}
+
+export function parse_timeID(time_id)
+{
+    switch (time_id)
+    {
+        case "no-opt":
+            return "ever";
+        case "h-five":
+            return "five hours";
+        case "d-one":
+            return "a day";
+        case "d-five":
+            return "five days";
+        case "d-ten":
+            return "ten days";
+        default:
+            console.log("Default");
+            return minutes;
+    }
+}
+
+export function is_link(text)
+{
+    const urlRegex = /^(?:(?:https?|ftp):\/\/)?(?:[\w-]+(?:\.[\w-]+)+)(?:[\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/;
+    return urlRegex.test(text);
 }
 
 export

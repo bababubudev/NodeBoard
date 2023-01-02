@@ -10,7 +10,7 @@ import * as mods from "./modules.js"
 const app = express();
 const dbURI = `mongodb+srv://${mods.keys.user}:${mods.keys.pass}@${mods.keys.user}.wo85kxg.mongodb.net/nodeboard_db?retryWrites=true&w=majority`;
 
-const timers = []
+const timers = [];
 
 let time_id = "";
 let prev_t;
@@ -69,7 +69,6 @@ function on_get(req, res)
             .then(() =>
             {
                 console.log("Database session name: " + req.session.data["linker"]);
-                console.log("Is a link: " + mods.is_link(req.session.data["text"]));
                 res.render(page, {
                     title: page,
                     info: req.session.data,
@@ -183,7 +182,6 @@ function on_inbox_post(req, res)
 
             if (result["text"] === text && (prev_t === time_to_remove && prev_t !== undefined)) 
             {
-                console.log(prev_t + " " + time_to_remove);
                 res.redirect("/inbox");
                 return;
             }

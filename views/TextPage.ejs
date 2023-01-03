@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include("./partials/head.ejs") %>
+<link rel="stylesheet" href="area.css">
+
+<body>
+    <section id="section">
+        <div class="info">
+            <h1 class="intro">Hello, <%= info["linker"] %>!</h1>
+            <% if (messages.success) { %>
+            <div class="alert alert-success base-text"><%= messages.success %></div>
+            <% } %>
+        </div>
+
+        <form action="/inbox" class="form" method="POST">
+            <% if (info["_id"] === 0) { %>
+            <p style="margin-bottom: 30px;"> PAGE WAS ACCESSED WITHOUT LOGGING IN </p>
+            <% } else { %>
+
+            <textarea class="user-inputbox base-text" type="text" name="textinput"
+                placeholder="Save your text here!"><%= info["text"] %></textarea>
+
+            <div class="dabaune">
+                <select name="removal" id="timer" class="dropdown">
+                    <option value="no-opt" <%= (timerID == "no-opt") ? "selected":"" %>>Don't Remove</option>
+                    <option value="h-five" <%= (timerID == "h-five") ? "selected":"" %>>5 Hours</option>
+                    <option value="d-one" <%= (timerID == "d-one") ? "selected":"" %>>1 Day</option>
+                    <option value="d-five" <%= (timerID == "d-five") ? "selected":"" %>>5 Days</option>
+                    <option value="d-ten" <%= (timerID == "d-ten") ? "selected":"" %>>10 Days</option>
+                </select>
+                <button class="submit-button" type="submit">Save</button>
+            </div>
+            <% } %>
+
+            <div class="laijani">
+                <% if (link) { %>
+                <a href="<%- info["text"] %>" target="_blank" class="anchor link">Take me to link</a>
+                <% } %>
+
+                <a href="/" class="anchor">Back home</a>
+            </div>
+        </form>
+    </section>
+
+    <script>
+        const tx = document.getElementsByTagName("textarea");
+        const anchor_area = document.querySelector('.laijani');
+        const link = "<%= link %>";
+
+        anchor_area.style.setProperty("grid-template-columns", "1fr 1fr");
+        if (link === "false")
+        {
+            anchor_area.style.setProperty("grid-template-columns", "none");
+        }
+
+        for (let i = 0; i < tx.length; i++)
+        {
+            tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+            tx[i].addEventListener("input", OnInput, false);
+        }
+
+        function OnInput()
+        {
+            this.style.height = 0;
+            this.style.height = (this.scrollHeight) + "px";
+        }
+    </script>
+</body>
+
+</html>

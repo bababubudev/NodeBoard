@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include("./partials/head.ejs") %>
+<link rel="stylesheet" href="/main.css">
+
+<body>
+    <section id="section">
+        <% if (info["_id"] !== 0) { %>
+        <h1>Welcome back, <%= info["linker"] %>! </h1>
+        <% } else { %>
+        <h1>Redirect yourself!</h1>
+        <% } %>
+
+        <div class="content">
+            <form action="#" method="POST" class="form">
+                <input class="user-inputbox" type="text" name="userlink" required="required"
+                    placeholder="<%- info["_id"] !== 0 ? "Create a new field..." : "Create your field or continue from before..." %>">
+
+                <button class="submit-button" type="submit" value="submit">Take me to link!</button>
+            </form>
+
+            <% if (info["_id"] !== 0) { %>
+            <a class="anchor" href="/inbox">Previous Redirect</a>
+            <% } %>
+        </div>
+    </section>
+</body>
+
+</html>

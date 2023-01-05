@@ -1,2 +1,2 @@
 # Node_Clipboard
-Node javascript version of my python Flask project.
+Node.js version of my python Flask project with added functionalities and quality of life changes.

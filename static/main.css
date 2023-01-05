@@ -52,7 +52,7 @@ h1 {
     .content {
         display: grid;
         grid-template-rows: 40px 1fr;
-        gap: 10px
+        gap: 10px;
     }
 
     .form {
@@ -101,6 +101,7 @@ h1 {
     border-radius: 2px;
 
     font-size: 14px;
+    margin: none;
     text-decoration: none;
     padding: 5px;
     transition: 0.3s;

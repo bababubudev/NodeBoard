@@ -14,6 +14,7 @@ const timers = [];
 
 let time_id = "";
 let prev_t;
+let is_synced;
 
 mongoose.set("strictQuery", false);
 mongoose.connect(dbURI).then(on_connect).catch(on_fail);
@@ -28,11 +29,19 @@ app.use(morgan("dev"));
 app.use(flash());
 
 app.get("/", on_get);
-app.get("/inbox", on_get);
+app.get("/inbox", on_inbox_get);
 
 app.post("/", on_post);
 app.post("/inbox", on_inbox_post);
 app.use(foreign_redirect);
+
+setInterval(() =>
+{
+    if (!is_synced)
+    {
+        //something here
+    }
+}, 500);
 
 function on_connect(result)
 {
@@ -47,42 +56,46 @@ function on_fail(err)
 
 function on_get(req, res)
 {
-    let page = "";
-
-    switch (req.url)
+    if (req.session.data)
     {
-        case "/":
-            page += "Home";
-            break;
-        case "/inbox":
-            page += "TextPage";
-            break;
-        default:
-            page += "404";
-            break;
+        res.render("Home", {
+            title: "Home",
+            info: req.session.data
+        });
     }
+    else
+    {
+        console.log("No sessions found!");
+        res.render("Home", {
+            title: "Home",
+            info: mods.object_default
+        });
+    }
+}
 
-
+function on_inbox_get(req, res)
+{
     if (req.session.data)
     {
         sync_session(req)
-            .then(() =>
+            .then((result) =>
             {
-                console.log("Database session name: " + req.session.data["linker"]);
-                res.render(page, {
-                    title: page,
+                is_synced = !result;
+                res.render("TextPage", {
+                    title: "TextPage",
                     info: req.session.data,
                     timerID: time_id,
                     messages: req.flash(),
                     link: mods.is_link(req.session.data["text"])
                 });
             });
+        console.log("Database session name: " + req.session.data["linker"]);
     }
     else
     {
         console.log("No sessions found!");
-        res.render(page, {
-            title: page,
+        res.render("TextPage", {
+            title: "TextPage",
             info: mods.object_default,
             timerID: "",
             messages: req.flash(),
@@ -93,22 +106,22 @@ function on_get(req, res)
 
 async function sync_session(request)
 {
-    let is_synced = false;
     return Redirect.findOne({ linker: request.session.data["linker"] })
         .then((r) =>
         {
-            is_synced = request.session.data["text"] === r.text;
-
-            if (is_synced) return;
+            if (request.session.data["text"] === r.text) return false;
             else
             {
                 console.log("Out of sync! Syncing...");
                 request.session.data = r;
+
+                return true;
             }
         })
         .catch((err) =>
         {
             console.log("Something ain't right!\n" + err);
+            return false;
         });
 }
 
@@ -250,5 +263,5 @@ function reset(request)
     if (timers[link]) delete timers[link];
 
     console.log("Session value " + link + " destroyed!");
-    request.flash("success", `Session for ${link} replaced!`)
+    request.flash("success", `Session for ${link} replaced!`);
 }

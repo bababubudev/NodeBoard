@@ -54,7 +54,7 @@ export function parse_time(timer)
         case "no-opt":
             return null;
         case "h-five":
-            return 5 * hours;
+            return 5 * seconds;
         case "d-one":
             return days;
         case "d-five":
@@ -91,6 +91,12 @@ export function is_link(text)
 {
     const urlRegex = /^(?:(?:https?|ftp):\/\/)?(?:[\w-]+(?:\.[\w-]+)+)(?:[\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/;
     return urlRegex.test(text);
+}
+
+export function get_clickable(link)
+{
+    return link.startsWith("http://") || link.startsWith("https://") ?
+        link : `http://${link}`;
 }
 
 export

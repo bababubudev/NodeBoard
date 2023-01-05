@@ -20,7 +20,6 @@ section {
     margin: auto;
     margin-top: 75px;
     padding: 30px;
-
     overflow: hidden;
 }
 
@@ -29,90 +28,30 @@ h1 {
     color: rgb(255, 145, 0);
 }
 
-:not(h1):not(.base-text) {
-    font-size: 16px;
+.base-text {
+    font-size: 15px;
     color: rgb(255, 187, 0);
 }
 
 @media (max-width: 700px) {
     .form {
         display: grid;
-        grid-template-rows: 1fr 60px 60px;
-        gap: 10px
-    }
-
-    .dabaune {
-        display: grid;
-        grid-template-columns: 100px 1fr;
-        gap: 10px
-    }
-
-    .intro {
-        margin: 20px 0 0 0;
-    }
-
-    .laijani {
-        display: grid;
+        grid-template-rows: 50px 40px 30px;
         gap: 10px;
-        margin-top: 20px;
-    }
-
-    .link {
-        font-size: 14px;
-    }
-
-    .info {
-        display: grid;
-        grid-template-rows: 1fr 1fr;
-    }
-
-    .alert {
-        display: grid;
-        align-items: center;
-
-        font-size: 12px;
-        height: fit-content;
-        margin-top: auto;
-        margin-bottom: auto;
-        padding: 10px 0px 10px 10px;
-
-        color: rgb(83, 83, 83);
-
-        border: 10px;
-        border-color: rgb(255, 242, 223);
-        border-radius: 5px 5px 5px 0px;
-        border-style: none none none solid;
-        background-color: rgb(255, 145, 0);
-
-        animation: fade-out 0.5s forwards;
-        animation-delay: 5s;
     }
 }
 
 @media (min-width: 700px) {
-    .form {
-        display: grid;
-        grid-template-columns: 3fr 1fr;
-        grid-template-rows: 1fr 40px;
-        row-gap: 30px;
-        column-gap: 10px;
-    }
-
-    .dabaune {
-        display: grid;
-        grid-template-rows: 30px 1fr;
-        gap: 10px;
-    }
-
-    .laijani {
-        display: grid;
-        grid-column: span 2;
-        gap: 10px;
-    }
-
     .info {
         display: grid;
         grid-template-columns: 3fr 2fr;
+        gap: 10px;
+    }
+
+    .form {
+        display: grid;
+        grid-template-columns: 1fr 200px;
+        grid-template-rows: 40px 1fr;
         gap: 10px;
     }
 
@@ -140,20 +79,9 @@ h1 {
     }
 }
 
-.user-inputbox {
-    min-height: 15vh;
-    font-size: 16px;
-    border: transparent;
-    border-radius: 2px;
-    padding: 10px;
-
-    resize: none;
-}
-
 .submit-button {
     color: rgb(255, 187, 0);
     background-color: transparent;
-
     border: 1px;
     border-style: solid;
     border-radius: 2px;
@@ -163,34 +91,38 @@ h1 {
 .submit-button:hover {
     color: rgb(0, 0, 0);
     background-color: rgb(255, 187, 0);
-    border-color: rgb(255, 187, 0);
+    border: transparent;
     transition: 0.2s;
 }
 
 .submit-button:active {
     opacity: 70%;
+    border: transparent;
     transition: 0.2s;
-    border-color: rgb(255, 187, 0);
 }
 
-.dropdown {
+.user-inputbox {
     border: transparent;
-    border-radius: 2px;
-    padding: 3px 10px;
+    border-radius: 3px;
 }
 
 .anchor {
     display: flex;
+    align-items: center;
+    justify-content: center;
+
+    grid-column: span 2;
+
     color: rgb(255, 187, 0);
     background-color: transparent;
     border: 1px;
     border-style: solid;
     border-radius: 2px;
 
+    font-size: 14px;
+    margin: none;
     text-decoration: none;
-    align-items: center;
-    justify-content: center;
-
+    padding: 5px;
     transition: 0.3s;
 }
 

@@ -13,8 +13,7 @@ const dbURI = `mongodb+srv://${mods.keys.user}:${mods.keys.pass}@${mods.keys.use
 const timers = [];
 
 let time_id = "";
-let prev_t;
-let is_synced;
+let prev_t, is_set;
 
 mongoose.set("strictQuery", false);
 mongoose.connect(dbURI).then(on_connect).catch(on_fail);
@@ -35,14 +34,6 @@ app.post("/", on_post);
 app.post("/inbox", on_inbox_post);
 app.use(foreign_redirect);
 
-setInterval(() =>
-{
-    if (!is_synced)
-    {
-        //something here
-    }
-}, 500);
-
 function on_connect(result)
 {
     console.log("Connected to the database.");
@@ -58,9 +49,24 @@ function on_get(req, res)
 {
     if (req.session.data)
     {
+        if (req.session.data["_id"] !== 0 && !is_set)
+        {
+            req.flash("warning", `${req.session.data["linker"]} has not saved stuff`);
+            remove_data(req);
+            reset(req);
+        }
+
+        // if ()
+        // {
+        //     req.flash("warning", `req.session.data["linker"] is unused! Removing...`);
+        //     remove_data(req);
+        //     reset(req);
+        // }
+
         res.render("Home", {
             title: "Home",
-            info: req.session.data
+            info: req.session.data,
+            message: req.flash()
         });
     }
     else
@@ -80,13 +86,13 @@ function on_inbox_get(req, res)
         sync_session(req)
             .then((result) =>
             {
-                is_synced = !result;
                 res.render("TextPage", {
                     title: "TextPage",
                     info: req.session.data,
                     timerID: time_id,
                     messages: req.flash(),
-                    link: mods.is_link(req.session.data["text"])
+                    has_link: mods.is_link(req.session.data["text"]),
+                    link: mods.get_clickable(req.session.data["text"])
                 });
             });
         console.log("Database session name: " + req.session.data["linker"]);
@@ -99,7 +105,8 @@ function on_inbox_get(req, res)
             info: mods.object_default,
             timerID: "",
             messages: req.flash(),
-            link: false
+            has_link: false,
+            link: ""
         });
     }
 }
@@ -140,6 +147,7 @@ function on_post(req, res)
     Redirect.findOne({ linker: link })
         .then((result) =>
         {
+            //[TODO] motherfucking deletion not working
             if (result != null)
             {
                 req.session.data = result;
@@ -151,7 +159,7 @@ function on_post(req, res)
                 new_user.save()
                     .then((s_result) =>
                     {
-                        console.log("[ New Output ]\n" + s_result);
+                        console.log("[ New User ]\n" + s_result);
                         req.session.data = s_result;
                         res.redirect("/inbox");
                     })
@@ -190,6 +198,9 @@ function on_inbox_post(req, res)
             {
                 res.redirect("/");
                 reset(req);
+
+                if (timers[link]) delete timers[link];
+
                 return;
             }
 
@@ -209,7 +220,9 @@ function on_inbox_post(req, res)
 
                     req.session.data = s_result;
                     req.session.cookie.maxAge = duration;
-                    console.log("[ New Text ]\n" + s_result);
+                    is_set = true;
+
+                    console.log("[ New Update ]\n" + s_result);
 
                     clearTimeout(timers[link]);
                     if (duration !== null)
@@ -260,7 +273,7 @@ function reset(request)
     let link = request.session.data["linker"];
 
     request.session.data = mods.object_default;
-    if (timers[link]) delete timers[link];
+    is_set = false;
 
     console.log("Session value " + link + " destroyed!");
     request.flash("success", `Session for ${link} replaced!`);

@@ -37,7 +37,7 @@ const object_default = {
     updatedAt: null
 }
 
-const port_number = 6969;
+const port_number = 3000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

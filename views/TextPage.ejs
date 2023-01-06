@@ -21,7 +21,7 @@
             <textarea class="user-inputbox" type="text" name="textinput" id="input"
                 placeholder="Save your text here!"><%= info["text"] %></textarea>
 
-            <div class="dabaune">
+            <div class="dabaune" id="dabam">
                 <select name="removal" id="timer" class="dropdown">
                     <option value="h-five" <%= (timerID == "h-five") ? "selected":"" %>>5 Hours</option>
                     <option value="d-one" <%= (timerID == "d-one") ? "selected":"" %>>1 Day</option>
@@ -29,7 +29,7 @@
                     <option value="d-ten" <%= (timerID == "d-ten") ? "selected":"" %>>10 Days</option>
                     <option value="no-opt" <%= (timerID == "no-opt") ? "selected":"" %>>Don't Remove</option>
                 </select>
-                <button class="submit-button" type="submit">Save</button>
+                <button class="submit-button" type="submit" id="save">Save</button>
             </div>
             <% } %>
 
@@ -46,10 +46,25 @@
     <script>
         const tx = document.getElementsByTagName("textarea");
         const anchor_area = document.querySelector('.laijani');
+        const select_attr = document.getElementById("timer");
+        const save_attr = document.getElementById("save");
 
         const link = "<%= has_link %>";
+        const linker_name = "<%= info.linker %>";
 
-        console.log(link);
+        if (linker_name === "Prabesh")
+        {
+            select_attr.setAttribute("disabled", "");
+            save_attr.setAttribute("disabled", "");
+            save_attr.style.setProperty("color", "grey");
+        }
+        else
+        {
+            select_attr.removeAttribute("disabled");
+            save_attr.removeAttribute("disabled");
+            save_attr.style.setProperty("color", "rgb(255, 187, 0)");
+        }
+
         anchor_area.style.setProperty("grid-template-columns", "1fr 1fr");
         if (link === "false")
         {
@@ -69,6 +84,7 @@
         }
 
     </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 
 </html>

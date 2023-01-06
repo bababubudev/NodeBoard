@@ -54,7 +54,7 @@ export function parse_time(timer)
         case "no-opt":
             return null;
         case "h-five":
-            return 5 * seconds;
+            return 5 * hours;
         case "d-one":
             return days;
         case "d-five":

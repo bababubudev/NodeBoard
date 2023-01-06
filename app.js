@@ -13,7 +13,7 @@ const dbURI = `mongodb+srv://${mods.keys.user}:${mods.keys.pass}@${mods.keys.use
 const timers = [];
 
 let time_id = "";
-let prev_t, is_set;
+let prev_t;
 
 mongoose.set("strictQuery", false);
 mongoose.connect(dbURI).then(on_connect).catch(on_fail);
@@ -37,7 +37,7 @@ app.use(foreign_redirect);
 function on_connect(result)
 {
     console.log("Connected to the database.");
-    app.listen(mods.port_number)
+    app.listen(mods.port_number);
 }
 
 function on_fail(err)
@@ -49,32 +49,40 @@ function on_get(req, res)
 {
     if (req.session.data)
     {
-        if (req.session.data["_id"] !== 0 && !is_set)
+        const unused = req.session.data["createdAt"] === req.session.data["updatedAt"] && req.session.data["_id"] !== 0;
+
+        if (unused)
         {
-            req.flash("warning", `${req.session.data["linker"]} has not saved stuff`);
-            remove_data(req);
-            reset(req);
+            let d_temp = req.session.data;
+
+            req.flash("warning", `${d_temp["linker"]} is not being used! Removing...\n`);
+            remove_data(req)
+                .then(() =>
+                {
+                    reset(req);
+                    return res.render("Home", {
+                        title: "Home",
+                        info: mods.object_default,
+                        message: req.flash()
+                    });
+                });
         }
-
-        // if ()
-        // {
-        //     req.flash("warning", `req.session.data["linker"] is unused! Removing...`);
-        //     remove_data(req);
-        //     reset(req);
-        // }
-
-        res.render("Home", {
-            title: "Home",
-            info: req.session.data,
-            message: req.flash()
-        });
+        else
+        {
+            return res.render("Home", {
+                title: "Home",
+                info: req.session.data,
+                message: req.flash()
+            });
+        }
     }
     else
     {
         console.log("No sessions found!");
         res.render("Home", {
             title: "Home",
-            info: mods.object_default
+            info: mods.object_default,
+            message: req.flash()
         });
     }
 }
@@ -89,7 +97,7 @@ function on_inbox_get(req, res)
                 res.render("TextPage", {
                     title: "TextPage",
                     info: req.session.data,
-                    timerID: time_id,
+                    timerID: req.session.data["linker"] === "Prabesh" ? "no-opt" : time_id,
                     messages: req.flash(),
                     has_link: mods.is_link(req.session.data["text"]),
                     link: mods.get_clickable(req.session.data["text"])
@@ -147,7 +155,6 @@ function on_post(req, res)
     Redirect.findOne({ linker: link })
         .then((result) =>
         {
-            //[TODO] motherfucking deletion not working
             if (result != null)
             {
                 req.session.data = result;
@@ -189,9 +196,9 @@ function on_inbox_post(req, res)
         return;
     }
 
-    let link = req.session.data["linker"];
+    let current_name = req.session.data["linker"];
 
-    Redirect.findOne({ linker: link })
+    Redirect.findOne({ linker: current_name })
         .then((result) =>   
         {
             if (!result)
@@ -199,7 +206,7 @@ function on_inbox_post(req, res)
                 res.redirect("/");
                 reset(req);
 
-                if (timers[link]) delete timers[link];
+                if (timers[current_name]) delete timers[current_name];
 
                 return;
             }
@@ -211,7 +218,8 @@ function on_inbox_post(req, res)
             }
 
             result["text"] = text;
-            time_id = req.session.data["linker"] === link ? time_to_remove : "no-opt";
+            console.log(current_name);
+            time_id = req.session.data["linker"] === current_name ? time_to_remove : "no-opt";
 
             result.save()
                 .then((s_result) =>
@@ -220,13 +228,12 @@ function on_inbox_post(req, res)
 
                     req.session.data = s_result;
                     req.session.cookie.maxAge = duration;
-                    is_set = true;
 
                     console.log("[ New Update ]\n" + s_result);
 
-                    clearTimeout(timers[link]);
+                    clearTimeout(timers[current_name]);
                     if (duration !== null)
-                        timers[link] = setTimeout(remove_data.bind(null, req), duration);
+                        timers[current_name] = setTimeout(remove_data.bind(null, req), duration);
 
                     prev_t = time_to_remove;
 
@@ -247,33 +254,31 @@ function on_inbox_post(req, res)
 
 }
 
-function remove_data(req)
+async function remove_data(req)
 {
-    if (req.session.data["_id"] == 0)
+    if (req.session.data["_id"] === 0)
     {
         console.log("No data to delete.");
         return;
     }
 
-    Redirect.findByIdAndRemove(req.session.data["_id"], (err) =>
+    try
     {
-        if (err)
-        {
-            console.log(err);
-        }
-        else
-        {
-            console.log("Deleting data of " + req.session.data["linker"]);
-        }
-    });
+        await Redirect.findByIdAndRemove(req.session.data["_id"]);
+        console.log("Deleting data of " + req.session.data["linker"]);
+    }
+    catch (err)
+    {
+        console.log(err);
+    }
 }
 
 function reset(request)
 {
     let link = request.session.data["linker"];
+    if (link === mods.object_default.linker) return;
 
     request.session.data = mods.object_default;
-    is_set = false;
 
     console.log("Session value " + link + " destroyed!");
     request.flash("success", `Session for ${link} replaced!`);

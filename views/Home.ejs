@@ -9,11 +9,11 @@
         <div class="info">
             <% if (info["_id"] !== 0) { %>
             <h1>Welcome back, <%= info["linker"] %>! </h1>
-            <% if (message["warning"]) { %>
-            <div class="alert alert-warn base-text"><%= message["warning"] %></div>
-            <% } %>
             <% } else { %>
             <h1>Redirect yourself!</h1>
+            <% } %>
+            <% if (message !== undefined && message["warning"]) { %>
+            <div class="alert alert-warn base-text"><%= message["warning"] %></div>
             <% } %>
         </div>
 

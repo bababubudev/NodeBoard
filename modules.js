@@ -24,7 +24,7 @@ const object_session = {
     resave: false,
     saveUninitialized: true,
     cookie: {
-        secure: false,
+        secure: true,
         maxAge: 1000 * 60 * 5
     }
 }

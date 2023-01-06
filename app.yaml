@@ -1,0 +1,6 @@
+runtime: nodejs18
+
+env_variables:
+  USER:"dai"
+  PSSWD:"Prabeshdaikodatabase01."
+  S_SECRET:"Daidammidekkhiraachaaajavoli01."

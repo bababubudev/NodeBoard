@@ -227,13 +227,13 @@ function on_inbox_post(req, res)
                     req.session.data = s_result;
                     req.session.cookie.maxAge = duration;
 
-                    console.log("[ New Update ]\n" + s_result);
-
                     clearTimeout(timers[current_name]);
                     if (duration !== null)
                         timers[current_name] = setTimeout(remove_data.bind(null, req), duration);
 
                     prev_t = time_to_remove;
+
+                    console.log(`[ Update to data for duration of ${mods.parse_timeID(time_id)}]\n${s_result}`);
 
                     req.flash("success", `Your text is now saved for ${mods.parse_timeID(time_id)}!`);
                     res.redirect("/inbox");

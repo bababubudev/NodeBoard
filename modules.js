@@ -53,6 +53,8 @@ export function parse_time(timer)
     {
         case "no-opt":
             return null;
+        case "m-five":
+            return 5 * minutes;
         case "h-five":
             return 5 * hours;
         case "d-one":
@@ -73,6 +75,8 @@ export function parse_timeID(time_id)
     {
         case "no-opt":
             return "ever";
+        case "m-five":
+            return "five minutes";
         case "h-five":
             return "five hours";
         case "d-one":

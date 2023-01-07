@@ -51,23 +51,7 @@ function on_get(req, res)
     {
         const unused = req.session.data["createdAt"] === req.session.data["updatedAt"] && req.session.data["_id"] !== 0;
 
-        if (unused)
-        {
-            let d_temp = req.session.data;
-
-            req.flash("warning", `${d_temp["linker"]} is not being used! Removing...\n`);
-            remove_data(req)
-                .then(() =>
-                {
-                    reset(req);
-                    return res.render("Home", {
-                        title: "Home",
-                        info: mods.object_default,
-                        message: req.flash()
-                    });
-                });
-        }
-        else
+        if (!unused)
         {
             return res.render("Home", {
                 title: "Home",
@@ -75,11 +59,25 @@ function on_get(req, res)
                 message: req.flash()
             });
         }
+
+        let d_temp = req.session.data;
+
+        req.flash("warning", `${d_temp["linker"]} is not being used! Removing...\n`);
+        remove_data(req)
+            .then(() =>
+            {
+                reset(req);
+                return res.render("Home", {
+                    title: "Home",
+                    info: mods.object_default,
+                    message: req.flash()
+                });
+            });
     }
     else
     {
         console.log("No sessions found!");
-        res.render("Home", {
+        return res.render("Home", {
             title: "Home",
             info: mods.object_default,
             message: req.flash()

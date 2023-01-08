@@ -35,9 +35,13 @@ h1 {
 }
 
 @media (max-width: 700px) {
+    .alert {
+        display: none;
+    }
+
     .form {
         display: grid;
-        grid-template-rows: 1fr 60px 60px;
+        grid-template-rows: 1fr 60px 1fr;
         gap: 10px
     }
 
@@ -49,16 +53,12 @@ h1 {
 
     .laijani {
         display: grid;
+        grid-template-rows: 40px 50px;
         gap: 10px;
         margin-top: 20px;
     }
 
-    .info {
-        display: grid;
-        grid-template-rows: 1fr 1fr;
-    }
-
-    .alert {
+    .phone-alert {
         display: grid;
         align-items: center;
 
@@ -81,6 +81,10 @@ h1 {
 }
 
 @media (min-width: 700px) {
+    .phone-alert {
+        display: none;
+    }
+
     .form {
         display: grid;
         grid-template-columns: 3fr 1fr;

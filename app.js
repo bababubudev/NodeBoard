@@ -61,6 +61,7 @@ function on_get(req, res)
         }
 
         let d_temp = req.session.data;
+        if (d_temp["_id"] === 0) return res.redirect("/");
 
         req.flash("warning", `${d_temp["linker"]} is not being used! Removing...\n`);
         remove_data(req)
@@ -166,6 +167,7 @@ function on_post(req, res)
                     {
                         console.log("[ New User ]\n" + s_result);
                         req.session.data = s_result;
+                        time_id = "d-one";
                         res.redirect("/inbox");
                     })
                     .catch((err) =>
@@ -201,12 +203,9 @@ function on_inbox_post(req, res)
         {
             if (!result)
             {
-                res.redirect("/");
                 reset(req);
-
                 if (timers[current_name]) delete timers[current_name];
-
-                return;
+                return res.redirect("/");
             }
 
             if (result["text"] === text && (prev_t === time_to_remove && prev_t !== undefined)) 
@@ -216,8 +215,7 @@ function on_inbox_post(req, res)
             }
 
             result["text"] = text;
-            console.log(current_name);
-            time_id = req.session.data["linker"] === current_name ? time_to_remove : "no-opt";
+            time_id = time_to_remove;
 
             result.save()
                 .then((s_result) =>

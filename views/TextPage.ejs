@@ -41,6 +41,9 @@
                 <% } %>
 
                 <a href="/" class="anchor">Back home</a>
+                <% if (messages.success) { %>
+                <div class="phone-alert alert-success"><%= messages.success %></div>
+                <% } %>
             </div>
         </form>
     </section>
@@ -48,6 +51,8 @@
     <script>
         const tx = document.getElementsByTagName("textarea");
         const anchor_area = document.querySelector('.laijani');
+        const alert_area = document.querySelector('.phone-alert');
+
         const select_attr = document.getElementById("timer");
         const save_attr = document.getElementById("save");
 
@@ -66,10 +71,15 @@
             save_attr.removeAttribute("disabled");
         }
 
-        anchor_area.style.setProperty("grid-template-columns", "1fr 1fr");
         if (link === "false")
         {
             anchor_area.style.setProperty("grid-template-columns", "none");
+            alert_area.style.removeAttribute("grid-column");
+        }
+        else
+        {
+            anchor_area.style.setProperty("grid-template-columns", "1fr 1fr");
+            alert_area.style.setProperty("grid-column", "span 2");
         }
 
         for (let i = 0; i < tx.length; i++)

@@ -17,6 +17,7 @@ const keys = {
 const object_blueprint = {
     linker: { type: String, required: true },
     text: { type: String, required: false },
+    time_id: { type: String, required: false }
 }
 
 const object_session = {
@@ -24,7 +25,7 @@ const object_session = {
     resave: false,
     saveUninitialized: true,
     cookie: {
-        maxAge: 1000 * 60 * 5
+        maxAge: null
     }
 }
 
@@ -32,6 +33,7 @@ const object_default = {
     _id: 0,
     linker: "it's the wrong page",
     text: "",
+    time_id: "",
     createdAt: null,
     updatedAt: null
 }

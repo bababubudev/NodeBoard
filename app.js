@@ -12,7 +12,6 @@ const dbURI = `mongodb+srv://${mods.keys.user}:${mods.keys.pass}@${mods.keys.use
 
 const timers = [];
 
-let time_id = "";
 let prev_t;
 
 mongoose.set("strictQuery", false);
@@ -90,6 +89,7 @@ function on_inbox_get(req, res)
 {
     if (req.session.data)
     {
+        const time_id = req.session.data["time_id"] === "" ? "d-one" : req.session.data["time_id"];
         sync_session(req)
             .then((result) =>
             {
@@ -111,7 +111,7 @@ function on_inbox_get(req, res)
             title: "TextPage",
             info: mods.object_default,
             timerID: "",
-            messages: req.flash(),
+            messages: "Nothing found!",
             has_link: false,
             link: ""
         });
@@ -120,10 +120,13 @@ function on_inbox_get(req, res)
 
 async function sync_session(request)
 {
+    const text = request.session.data["text"];
+    const time = request.session.data["time_id"];
+
     return Redirect.findOne({ linker: request.session.data["linker"] })
         .then((r) =>
         {
-            if (request.session.data["text"] === r.text) return false;
+            if (text === r.text && time === r.time_id) return false;
             else
             {
                 console.log("Out of sync! Syncing...");
@@ -161,13 +164,12 @@ function on_post(req, res)
             }
             else
             {
-                const new_user = new Redirect({ linker: link, text: "" });
+                const new_user = new Redirect({ linker: link, text: "", time_id: "" });
                 new_user.save()
                     .then((s_result) =>
                     {
                         console.log("[ New User ]\n" + s_result);
                         req.session.data = s_result;
-                        time_id = "d-one";
                         res.redirect("/inbox");
                     })
                     .catch((err) =>
@@ -215,7 +217,7 @@ function on_inbox_post(req, res)
             }
 
             result["text"] = text;
-            time_id = time_to_remove;
+            result["time_id"] = time_to_remove;
 
             result.save()
                 .then((s_result) =>
@@ -231,9 +233,9 @@ function on_inbox_post(req, res)
 
                     prev_t = time_to_remove;
 
-                    console.log(`[ Update to data for duration of ${mods.parse_timeID(time_id)}]\n${s_result}`);
+                    console.log(`[ Update to data for duration of ${mods.parse_timeID(result["time_id"])}]\n${s_result}`);
 
-                    req.flash("success", `Your text is now saved for ${mods.parse_timeID(time_id)}!`);
+                    req.flash("success", `Your text is now saved for ${mods.parse_timeID(result["time_id"])}!`);
                     res.redirect("/inbox");
                 })
                 .catch((err) =>

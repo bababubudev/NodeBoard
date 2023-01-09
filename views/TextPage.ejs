@@ -50,6 +50,7 @@
 
     <script>
         const tx = document.getElementsByTagName("textarea");
+
         const anchor_area = document.querySelector('.laijani');
         const alert_area = document.querySelector('.phone-alert');
 
@@ -58,6 +59,18 @@
 
         const link = "<%= has_link %>";
         const linker_name = "<%= info.linker %>";
+
+        for (let i = 0; i < tx.length; i++)
+        {
+            tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+            tx[i].addEventListener("input", OnInput, false);
+        }
+
+        function OnInput()
+        {
+            this.style.height = 0;
+            this.style.height = (this.scrollHeight) + "px";
+        }
 
         if (linker_name === "Prabesh")
         {
@@ -82,20 +95,7 @@
             alert_area.style.setProperty("grid-column", "span 2");
         }
 
-        for (let i = 0; i < tx.length; i++)
-        {
-            tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
-            tx[i].addEventListener("input", OnInput, false);
-        }
-
-        function OnInput()
-        {
-            this.style.height = 0;
-            this.style.height = (this.scrollHeight) + "px";
-        }
-
     </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 
 </html>

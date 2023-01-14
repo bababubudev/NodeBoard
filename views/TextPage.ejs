@@ -68,22 +68,12 @@
 
     <script>
         const tx = document.getElementsByTagName("textarea");
+
         const anchor_area = document.querySelector('.laijani');
         const alert_area = document.querySelector('.phone-alert');
 
         const link = "<%= has_link %>";
         const linker_name = "<%= info.linker %>";
-
-        if (link === "false")
-        {
-            anchor_area.style.setProperty("grid-template-columns", "none");
-            alert_area.style.removeAttribute("grid-column");
-        }
-        else
-        {
-            anchor_area.style.setProperty("grid-template-columns", "1fr 1fr");
-            alert_area.style.setProperty("grid-column", "span 2");
-        }
 
         for (let i = 0; i < tx.length; i++)
         {
@@ -95,6 +85,29 @@
         {
             this.style.height = 0;
             this.style.height = (this.scrollHeight) + "px";
+        }
+
+        if (linker_name === "Prabesh")
+        {
+            select_attr.setAttribute("disabled", "");
+            save_attr.setAttribute("disabled", "");
+            save_attr.style.setProperty("color", "grey");
+        }
+        else
+        {
+            select_attr.removeAttribute("disabled");
+            save_attr.removeAttribute("disabled");
+        }
+
+        if (link === "false")
+        {
+            anchor_area.style.setProperty("grid-template-columns", "none");
+            alert_area.style.removeAttribute("grid-column");
+        }
+        else
+        {
+            anchor_area.style.setProperty("grid-template-columns", "1fr 1fr");
+            alert_area.style.setProperty("grid-column", "span 2");
         }
 
     </script>

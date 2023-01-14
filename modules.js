@@ -25,6 +25,7 @@ const object_session = {
     resave: false,
     saveUninitialized: true,
     cookie: {
+        secure: true,
         maxAge: null
     }
 }

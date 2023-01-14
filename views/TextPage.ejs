@@ -14,6 +14,7 @@
             <% } %>
         </div>
 
+        <% if (info["linker"] !== "Prabesh") { %>
         <form action="/inbox" class="form" method="POST">
             <% if (info["_id"] === 0) { %>
             <p class="base-text" style="margin-bottom: 30px;"> PAGE WAS ACCESSED WITHOUT LOGGING IN </p>
@@ -46,6 +47,23 @@
                 <% } %>
             </div>
         </form>
+        <% } else { %>
+        <div class="form">
+            <textarea class="user-inputbox" id="input"><%= info["text"] %></textarea>
+            <div class="dabaune" id="dabam">
+                <select id="timer" class="dropdown" style="color: grey;">
+                    <option>Don't Remove</option>
+                </select>
+                <div class="submit-button" style="color:grey">Save</div>
+            </div>
+            <div class="laijani">
+                <a href="/" class="anchor">Back home</a>
+                <% if (messages.success) { %>
+                <div class="phone-alert alert-success"><%= messages.success %></div>
+                <% } %>
+            </div>
+        </div>
+        <% } %>
     </section>
 
     <script>
@@ -53,23 +71,8 @@
         const anchor_area = document.querySelector('.laijani');
         const alert_area = document.querySelector('.phone-alert');
 
-        const select_attr = document.getElementById("timer");
-        const save_attr = document.getElementById("save");
-
         const link = "<%= has_link %>";
         const linker_name = "<%= info.linker %>";
-
-        if (linker_name === "Prabesh")
-        {
-            select_attr.setAttribute("disabled", "");
-            save_attr.setAttribute("disabled", "");
-            save_attr.style.setProperty("color", "grey");
-        }
-        else
-        {
-            select_attr.removeAttribute("disabled");
-            save_attr.removeAttribute("disabled");
-        }
 
         if (link === "false")
         {
@@ -95,7 +98,6 @@
         }
 
     </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 
 </html>

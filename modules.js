@@ -17,13 +17,13 @@ const keys = {
 const object_blueprint = {
     linker: { type: String, required: true },
     text: { type: String, required: false },
-    time_id: { type: String, required: false }
+    time_id: { type: String, required: true }
 }
 
 const object_session = {
     secret: process.env.S_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: {
         secure: true,
         maxAge: null

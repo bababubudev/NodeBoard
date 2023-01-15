@@ -12,7 +12,7 @@ const dbURI = `mongodb+srv://${mods.keys.user}:${mods.keys.pass}@${mods.keys.use
 
 const timers = [];
 
-let prev_t;
+let prev_t = "";
 
 mongoose.set("strictQuery", false);
 mongoose.connect(dbURI).then(on_connect).catch(on_fail);
@@ -89,7 +89,8 @@ function on_inbox_get(req, res)
 {
     if (req.session.data)
     {
-        const time_id = req.session.data["time_id"] === "" ? "d-one" : req.session.data["time_id"];
+        const time_id = req.session.data["time_id"];
+
         sync_session(req)
             .then((result) =>
             {
@@ -137,6 +138,7 @@ async function sync_session(request)
         })
         .catch((err) =>
         {
+            request.flash("warning", "Something has gone horribly wrong !! D:");
             console.log("Something ain't right!\n" + err);
             return false;
         });
@@ -164,7 +166,7 @@ function on_post(req, res)
             }
             else
             {
-                const new_user = new Redirect({ linker: link, text: "", time_id: "" });
+                const new_user = new Redirect({ linker: link, text: "", time_id: "d-one" });
                 new_user.save()
                     .then((s_result) =>
                     {
@@ -189,16 +191,15 @@ function on_post(req, res)
 
 function on_inbox_post(req, res)
 {
-    let text = req.body.textinput;
-    let time_to_remove = req.body.removal;
+    const text = req.body.textinput;
+    const time_to_remove = req.body.removal;
 
     if (!req.session.data)
     {
-        res.redirect("/");
-        return;
+        return res.redirect("/");
     }
 
-    let current_name = req.session.data["linker"];
+    const current_name = req.session.data["linker"];
 
     Redirect.findOne({ linker: current_name })
         .then((result) =>   
@@ -206,11 +207,10 @@ function on_inbox_post(req, res)
             if (!result)
             {
                 reset(req);
-                if (timers[current_name]) delete timers[current_name];
                 return res.redirect("/");
             }
 
-            if (result["text"] === text && (prev_t === time_to_remove && prev_t !== undefined)) 
+            if (result["text"] === text && (prev_t === time_to_remove && prev_t !== "")) 
             {
                 res.redirect("/inbox");
                 return;
@@ -227,6 +227,7 @@ function on_inbox_post(req, res)
                     req.session.data = s_result;
                     req.session.cookie.maxAge = duration;
 
+                    if (timers[current_name]) delete timers[current_name];
                     clearTimeout(timers[current_name]);
                     if (duration !== null)
                         timers[current_name] = setTimeout(remove_data.bind(null, req), duration);

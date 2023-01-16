@@ -138,7 +138,7 @@ async function sync_session(request)
         })
         .catch((err) =>
         {
-            request.flash("warning", "Something has gone horribly wrong !! D:");
+            request.flash("success", "Something has gone horribly wrong !! D:");
             console.log("Something ain't right!\n" + err);
             return false;
         });
@@ -159,7 +159,7 @@ function on_post(req, res)
     Redirect.findOne({ linker: link })
         .then((result) =>
         {
-            if (result != null)
+            if (result !== null)
             {
                 req.session.data = result;
                 res.redirect("/inbox");
@@ -205,12 +205,6 @@ function on_inbox_post(req, res)
     Redirect.findOne({ linker: current_name })
         .then((result) =>   
         {
-            // if (!result)
-            // {
-            //     reset(req);
-            //     return res.redirect("/");
-            // }
-
             if (result["text"] === text && (prev_t === time_to_remove && prev_t !== "")) 
             {
                 res.redirect("/inbox");

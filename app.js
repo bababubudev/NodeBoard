@@ -196,6 +196,7 @@ function on_inbox_post(req, res)
 
     if (!req.session.data)
     {
+        req.flash("warning", "Something went wrong with saving session! Please try again...");
         return res.redirect("/");
     }
 
@@ -204,11 +205,11 @@ function on_inbox_post(req, res)
     Redirect.findOne({ linker: current_name })
         .then((result) =>   
         {
-            if (!result)
-            {
-                reset(req);
-                return res.redirect("/");
-            }
+            // if (!result)
+            // {
+            //     reset(req);
+            //     return res.redirect("/");
+            // }
 
             if (result["text"] === text && (prev_t === time_to_remove && prev_t !== "")) 
             {

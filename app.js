@@ -127,14 +127,10 @@ async function sync_session(request)
     return Redirect.findOne({ linker: request.session.data["linker"] })
         .then((r) =>
         {
-            if (text === r.text && time === r.time_id) return false;
-            else
-            {
-                console.log("Out of sync! Syncing...");
-                request.session.data = r;
+            console.log("Out of sync! Syncing...");
+            request.session.data = r;
 
-                return true;
-            }
+            return true;
         })
         .catch((err) =>
         {
@@ -270,10 +266,13 @@ async function remove_data(req)
 function reset(request)
 {
     let link = request.session.data["linker"];
+    const unused = req.session.data["createdAt"] === req.session.data["updatedAt"] && req.session.data["_id"] !== 0;
+
+    const success_message = unused ? `Session for ${link} removed and replaced!` : `Session for ${link} replaced!`;
     if (link === mods.object_default.linker) return;
 
     request.session.data = mods.object_default;
 
     console.log("Session value " + link + " destroyed!");
-    request.flash("success", `Session for ${link} replaced!`);
+    request.flash("success", success_message)
 }

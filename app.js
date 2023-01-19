@@ -8,7 +8,7 @@ import { Redirect } from "./models/redirects.js"
 import * as mods from "./modules.js"
 
 const app = express();
-const dbURI = `mongodb+srv://${mods.keys.user}:${mods.keys.pass}@${mods.keys.user}.wo85kxg.mongodb.net/nodeboard_db?retryWrites=true&w=majority`;
+const dbURI = `mongodb+srv://${mods.keys.user}:${mods.keys.pass}@safa.3y7dboe.mongodb.net/?retryWrites=true&w=majority`;
 
 const timers = [];
 
@@ -121,9 +121,6 @@ function on_inbox_get(req, res)
 
 async function sync_session(request)
 {
-    const text = request.session.data["text"];
-    const time = request.session.data["time_id"];
-
     return Redirect.findOne({ linker: request.session.data["linker"] })
         .then((r) =>
         {
@@ -266,10 +263,16 @@ async function remove_data(req)
 function reset(request)
 {
     let link = request.session.data["linker"];
-    const unused = req.session.data["createdAt"] === req.session.data["updatedAt"] && req.session.data["_id"] !== 0;
-
-    const success_message = unused ? `Session for ${link} removed and replaced!` : `Session for ${link} replaced!`;
     if (link === mods.object_default.linker) return;
+
+    const unused = request.session.data["createdAt"] === request.session.data["updatedAt"] && request.session.data["_id"] !== 0;
+    let success_message = `Session for ${link} replaced!`;
+
+    if (unused) 
+    {
+        remove_data(request);
+        success_message = `${link} is not being used! Removing...`;
+    }
 
     request.session.data = mods.object_default;
 

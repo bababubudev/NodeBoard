@@ -243,12 +243,6 @@ function on_inbox_post(req, res)
 
 async function remove_data(req)
 {
-    if (req.session.data["_id"] === 0)
-    {
-        console.log("No data to delete.");
-        return;
-    }
-
     try
     {
         await Redirect.findByIdAndRemove(req.session.data["_id"]);

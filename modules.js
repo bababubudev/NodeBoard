@@ -25,7 +25,6 @@ const object_session = {
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: true,
         maxAge: null
     }
 }
@@ -43,11 +42,6 @@ const port_number = process.env.PORT || 3000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-export function stringed(_data)
-{
-    return JSON.stringify(_data);
-}
 
 export function parse_time(timer)
 {

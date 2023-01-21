@@ -18,7 +18,6 @@ mongoose.set("strictQuery", false);
 mongoose.connect(dbURI).then(on_connect).catch(on_fail);
 
 app.set("view engine", "ejs");
-app.set("trust proxy", 1);
 
 app.use(express.static(mods.__dirname + "/static"));
 app.use(express.urlencoded({ extended: true }));
